@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 
 type Item = {
   id: number;
-  category: "frame" | "lens" | "glasses";
+  category: "frame" | "lens" | "glasses" | "sunglasses" | "solution";
   name: string;
   brand?: string;
   model?: string;
@@ -16,6 +16,7 @@ type Item = {
   power?: string;
   coating?: string[];
   frameType?: string;
+  glassType?: string[];
   quantity: number;
   price: number;
   // Lens-specific
@@ -40,6 +41,11 @@ type Item = {
   add?: string;
   ipd?: string;
   lensType?: string[];
+  // Solution-specific
+  company?: string;
+  volume?: string;
+  solutionQuantity?: string;
+  bottles?: number;
 };
 
 export default function InventoryPage() {
@@ -49,6 +55,7 @@ export default function InventoryPage() {
     category: "frame",
     coating: [],
     lensType: [],
+    glassType: [],
   });
   const [activeCategory, setActiveCategory] = useState<
     Item["category"] | "all"
@@ -61,47 +68,22 @@ export default function InventoryPage() {
       ...items,
       {
         id: Date.now(),
-        category: newItem.category!,
-        name: newItem.name,
-        brand: newItem.brand,
-        model: newItem.model,
-        color: newItem.color,
-        size: newItem.size,
-        type: newItem.type,
-        power: newItem.power,
-        coating: newItem.coating || [],
-        frameType: newItem.frameType,
+        ...newItem,
         quantity: Number(newItem.quantity),
         price: Number(newItem.price),
-        material: newItem.material,
-        design: newItem.design,
-        index: newItem.index,
-        quality: newItem.quality,
-        rSph: newItem.rSph,
-        rCyl: newItem.rCyl,
-        rAxis: newItem.rAxis,
-        rPd: newItem.rPd,
-        rVa: newItem.rVa,
-        rPrism: newItem.rPrism,
-        lSph: newItem.lSph,
-        lCyl: newItem.lCyl,
-        lAxis: newItem.lAxis,
-        lPd: newItem.lPd,
-        lVa: newItem.lVa,
-        lPrism: newItem.lPrism,
-        dv: newItem.dv,
-        nv: newItem.nv,
-        add: newItem.add,
-        ipd: newItem.ipd,
-        lensType: newItem.lensType || [],
-      },
+      } as Item,
     ]);
     setIsOpen(false);
-    setNewItem({ category: "frame", coating: [], lensType: [] });
+    setNewItem({
+      category: "frame",
+      coating: [],
+      lensType: [],
+      glassType: [],
+    });
   };
 
   const toggleArrayField = (
-    field: "coating" | "lensType",
+    field: "coating" | "lensType" | "glassType",
     value: string
   ) => {
     setNewItem((prev) => {
@@ -145,19 +127,23 @@ export default function InventoryPage() {
           className="w-full md:w-1/3 border p-2 rounded"
         />
         <div className="flex gap-4 border-b">
-          {["all", "frame", "lens", "glasses"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveCategory(tab as Item["category"] | "all")}
-              className={`capitalize pb-2 border-b-2 transition ${
-                activeCategory === tab
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+          {["all", "frame", "lens", "glasses", "sunglasses", "solution"].map(
+            (tab) => (
+              <button
+                key={tab}
+                onClick={() =>
+                  setActiveCategory(tab as Item["category"] | "all")
+                }
+                className={`capitalize pb-2 border-b-2 transition ${
+                  activeCategory === tab
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {tab}
+              </button>
+            )
+          )}
         </div>
       </div>
 
@@ -197,6 +183,10 @@ export default function InventoryPage() {
                     }`}
                   {item.category === "glasses" &&
                     `${item.power || ""} ${item.frameType || ""}`}
+                  {item.category === "sunglasses" &&
+                    `${item.color || ""} ${item.size || ""}`}
+                  {item.category === "solution" &&
+                    `${item.company || ""} ${item.volume || ""}ml`}
                 </td>
                 <td className="p-3">{item.quantity}</td>
                 <td className="p-3">₹{item.price}</td>
@@ -208,7 +198,11 @@ export default function InventoryPage() {
       </div>
 
       {/* Add Item Modal */}
-      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+      <Dialog
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="bg-white rounded-lg shadow p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -230,7 +224,10 @@ export default function InventoryPage() {
                 <option value="frame">Frame</option>
                 <option value="lens">Lens</option>
                 <option value="glasses">Glasses</option>
+                <option value="sunglasses">Sunglasses</option>
+                <option value="solution">Solution</option>
               </select>
+
               <input
                 type="text"
                 placeholder="Name"
@@ -240,28 +237,29 @@ export default function InventoryPage() {
                 }
                 className="w-full border p-2 rounded"
               />
-              <input
-                type="text"
-                placeholder="Brand"
-                value={newItem.brand || ""}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, brand: e.target.value })
-                }
-                className="w-full border p-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Model"
-                value={newItem.model || ""}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, model: e.target.value })
-                }
-                className="w-full border p-2 rounded"
-              />
 
               {/* Frame Fields */}
+              {/* Conditional Fields */}
               {newItem.category === "frame" && (
                 <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Brand"
+                    value={newItem.brand || ""}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, brand: e.target.value })
+                    }
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Model"
+                    value={newItem.model || ""}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, model: e.target.value })
+                    }
+                    className="border p-2 rounded"
+                  />
                   <input
                     type="text"
                     placeholder="Color"
@@ -283,6 +281,7 @@ export default function InventoryPage() {
                 </div>
               )}
 
+              {/* Lens Fields */}
               {/* Lens Fields */}
               {newItem.category === "lens" && (
                 <>
@@ -458,31 +457,143 @@ export default function InventoryPage() {
                 </>
               )}
 
-              {/* Glasses Fields */}
               {newItem.category === "glasses" && (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="Brand"
+                      value={newItem.brand || ""}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, brand: e.target.value })
+                      }
+                      className="border p-2 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Model"
+                      value={newItem.model || ""}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, model: e.target.value })
+                      }
+                      className="border p-2 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Size"
+                      value={newItem.size || ""}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, size: e.target.value })
+                      }
+                      className="border p-2 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Power"
+                      value={newItem.power || ""}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, power: e.target.value })
+                      }
+                      className="border p-2 rounded"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-2">Glass Type</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {["Anti-glare", "Blue Cut", "Photochromatic"].map(
+                        (type) => (
+                          <label key={type} className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={newItem.glassType?.includes(type)}
+                              onChange={() =>
+                                toggleArrayField("glassType", type)
+                              }
+                            />
+                            {type}
+                          </label>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {newItem.category === "sunglasses" && (
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"
-                    placeholder="Power"
-                    value={newItem.power || ""}
+                    placeholder="Brand"
+                    value={newItem.brand || ""}
                     onChange={(e) =>
-                      setNewItem({ ...newItem, power: e.target.value })
+                      setNewItem({ ...newItem, brand: e.target.value })
                     }
                     className="border p-2 rounded"
                   />
                   <input
                     type="text"
-                    placeholder="Frame Type"
-                    value={newItem.frameType || ""}
+                    placeholder="Model"
+                    value={newItem.model || ""}
                     onChange={(e) =>
-                      setNewItem({ ...newItem, frameType: e.target.value })
+                      setNewItem({ ...newItem, model: e.target.value })
+                    }
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Color"
+                    value={newItem.color || ""}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, color: e.target.value })
+                    }
+                    className="border p-2 rounded"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Size"
+                    value={newItem.size || ""}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, size: e.target.value })
                     }
                     className="border p-2 rounded"
                   />
                 </div>
               )}
 
-              {/* Common Fields */}
+              {/* Solution Fields */}
+              {newItem.category === "solution" && (
+                <>
+                  <select
+                    value={newItem.company || ""}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, company: e.target.value })
+                    }
+                    className="w-full border p-2 rounded"
+                  >
+                    <option value="">Select Company</option>
+                    <option value="Bio True">Bio True</option>
+                    <option value="Aqua Soft">Aqua Soft</option>
+                    <option value="Slix Lens">Slix Lens</option>
+                  </select>
+                  <select
+                    value={newItem.solutionQuantity || ""}
+                    onChange={(e) =>
+                      setNewItem({
+                        ...newItem,
+                        solutionQuantity: e.target.value,
+                      })
+                    }
+                    className="w-full border p-2 rounded"
+                  >
+                    <option value="">Select Quantity</option>
+                    <option value="60ml">60ml</option>
+                    <option value="120ml">120ml</option>
+                    <option value="360ml">360ml</option>
+                  </select>
+                </>
+              )}
+
+              {/* Common fields */}
               <div className="grid grid-cols-2 gap-2">
                 <input
                   type="number"
