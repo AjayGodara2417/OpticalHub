@@ -1,103 +1,82 @@
-import Image from "next/image";
+// src/app/page.tsx  -> Home Page (NOT dashboard)
+'use client'
 
-export default function Home() {
+import Link from 'next/link'
+import { ShoppingCart, Boxes, LayoutDashboard, Users, BarChart3, Settings } from 'lucide-react'
+
+const features = [
+  {
+    href: '/billing',
+    title: 'Billing',
+    description: 'Create and manage customer invoices quickly.',
+    icon: ShoppingCart,
+    color: 'from-pink-500 to-rose-500',
+  },
+  {
+    href: '/inventory',
+    title: 'Inventory',
+    description: 'Track frames, lenses, and accessories with ease.',
+    icon: Boxes,
+    color: 'from-indigo-500 to-blue-500',
+  },
+  {
+    href: '/dashboard',
+    title: 'Dashboard',
+    description: 'Get insights on sales, stock, and performance.',
+    icon: LayoutDashboard,
+    color: 'from-green-500 to-emerald-500',
+  },
+  {
+    href: '/customers',
+    title: 'Customers',
+    description: 'Manage customer data and prescription records.',
+    icon: Users,
+    color: 'from-purple-500 to-violet-500',
+  },
+  {
+    href: '/reports',
+    title: 'Reports',
+    description: 'View detailed sales and inventory analytics.',
+    icon: BarChart3,
+    color: 'from-orange-500 to-amber-500',
+  },
+  {
+    href: '/settings',
+    title: 'Settings',
+    description: 'Manage app settings, users, and preferences.',
+    icon: Settings,
+    color: 'from-gray-500 to-slate-500',
+  },
+]
+
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="max-w-6xl w-full text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Optical Hub</h1>
+        <p className="text-lg text-gray-600">Smart Inventory & Billing for Your Optical Shop</p>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+        {features.map(({ href, title, description, icon: Icon, color }) => (
+          <Link
+            key={href}
+            href={href}
+            className="group relative p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <div
+              className={`w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br ${color} text-white mb-4 group-hover:scale-110 transition`}
+            >
+              <Icon size={28} />
+            </div>
+            <h2 className="text-xl font-semibold mb-2">{title}</h2>
+            <p className="text-gray-600 text-sm">{description}</p>
+            <span className="absolute top-4 right-4 text-gray-400 group-hover:text-gray-600 transition">
+              →
+            </span>
+          </Link>
+        ))}
+      </div>
     </div>
-  );
+  )
 }
